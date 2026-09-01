@@ -32,7 +32,7 @@ class BingoSGGW extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const BingoBoardScreen(gridSize: 4,)
+      home: const BingoBoardScreen(gridSize: 3,)
     );
   }
 }
