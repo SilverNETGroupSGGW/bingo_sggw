@@ -10,4 +10,16 @@ class BingoTile {
     required this.text,
     this.isChecked = false,
   });
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'text': text,
+    'isChecked': isChecked,
+  };
+
+  factory BingoTile.fromJson(Map<String, dynamic> json) => BingoTile(
+      id: json['id'] as String,
+      text: json['text'] as String,
+      isChecked: json['isChecked'] as bool ?? false,
+    );
 }
