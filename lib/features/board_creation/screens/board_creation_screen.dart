@@ -87,9 +87,8 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
     }
   }
 
-  Future<void> _saveAndPlay() async {
+  Future<void> _play() async {
     final board = _buildBoardObject();
-    await BoardStorageService.saveBoard(board);
     if (mounted) {
       Navigator.of(context).push(
         MaterialPageRoute(
@@ -173,7 +172,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _saveAndPlay,
+                    onPressed: _play,
                     icon: const Icon(Icons.play_arrow),
                     label: const Text('GRAJ'),
                     style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
