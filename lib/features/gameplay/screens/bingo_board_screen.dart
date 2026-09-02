@@ -5,10 +5,12 @@ import 'package:bingo_sggw/core/utils/bingo_checker.dart';
 
 class BingoBoardScreen extends StatefulWidget {
   final int gridSize;
+  final List<BingoTile>? initialTiles;
 
   const BingoBoardScreen({
     super.key,
-    this.gridSize = 3,
+    this.gridSize = 5,
+    this.initialTiles,
   });
 
   @override createState() => _BingoBoardScreenState();
@@ -20,12 +22,18 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
 
   @override
   void initState() {
-    final int total = widget.gridSize * widget.gridSize;
-    _tiles = List.generate(
-      total,
-      (index) => BingoTile(id: index.toString(), text: 'Haslo ${index+1}',
-      ),
-    );
+    super.initState();
+    if (widget.initialTiles != null){
+      _tiles = widget.initialTiles!;
+    }
+    else{
+      final int total = widget.gridSize * widget.gridSize;
+      _tiles = List.generate(
+        total,
+        (index) => BingoTile(id: index.toString(), text: 'Haslo ${index+1}',
+        ),
+      );
+    }
   }
 
   void _onTileTapped(int index){

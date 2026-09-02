@@ -1,3 +1,4 @@
+import 'package:bingo_sggw/features/board_creation/screens/board_creation_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:bingo_sggw/features/gameplay/widgets/bingo_tile_widget.dart';
 import 'package:bingo_sggw/features/gameplay/screens/bingo_board_screen.dart';
@@ -32,7 +33,7 @@ class BingoSGGW extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const BingoBoardScreen(gridSize: 3,)
+      home: const BoardCreationScreen(),
     );
   }
 }
