@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bingo_sggw/features/gameplay/screens/bingo_board_screen.dart';
 import 'package:bingo_sggw/features/gameplay/models/bingo_tile.dart';
+import 'package:bingo_sggw/features/multiplayer/screens/scan_qr_screen.dart';
 
 class BoardCreationScreen extends StatefulWidget {
   const BoardCreationScreen({super.key});
@@ -68,6 +69,31 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
       appBar: AppBar(
         title: const Text('Stwórz własne Bingo'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner),
+            tooltip: 'Zeskanuj kod pokoju',
+            onPressed: () async {
+              // Otwieramy nasz skaner QR
+              final roomId = await Navigator.of(context).push<String>(
+                MaterialPageRoute(builder: (context) => const ScanQrScreen()),
+              );
+
+              if (roomId != null && context.mounted) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => Scaffold(
+                      appBar: AppBar(title: Text('Pokój: $roomId')),
+                      body: Center(
+                        child: Text('Dołączono do pokoju: $roomId'),
+                      ),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
