@@ -1,0 +1,18 @@
+[tools]
+# Matches the revision in .metadata (3.47.2); bundles the Dart SDK
+flutter = "3.47"
+# Chrome for Testing, used by `flutter run -d chrome`
+"http:chrome" = { version = "155.0.8059.39", url = "https://storage.googleapis.com/chrome-for-testing-public/{{ version }}/linux64/chrome-linux64.zip", strip_components = 1, bin_path = "." }
+
+[env]
+CHROME_EXECUTABLE = "chrome"
+
+[hooks]
+postinstall = "mise run setup"
+
+[tasks.setup]
+description = "Download the Flutter web SDK and fetch Dart packages"
+run = [
+  "flutter precache --web",
+  "flutter pub get",
+]
