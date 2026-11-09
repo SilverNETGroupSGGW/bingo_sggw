@@ -11,7 +11,8 @@ class DeepLinkService {
       if (initialUri != null) {
         _handleUri(initialUri, onRoomIdReceived);
       }
-    } catch (e) {
+    } catch (_) {
+      // Brak początkowego linku lub platforma go nie wspiera (np. testy).
     }
 
     _sub = _appLinks.uriLinkStream.listen(

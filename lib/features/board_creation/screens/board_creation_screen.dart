@@ -52,14 +52,27 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
   }
 
   void _updateGridSize(int newSize) {
+    if (newSize == _gridSize) return;
+
     setState(() {
       _gridSize = newSize;
-      _initControllers();
+      final totalTiles = _gridSize * _gridSize;
+
+      // Zachowaj już wpisane hasła, zwolnij nadmiarowe kontrolery.
+      for (final c in _controllers.skip(totalTiles)) {
+        c.dispose();
+      }
+      final kept = _controllers.take(totalTiles).toList();
+      _controllers = [
+        ...kept,
+        for (var i = kept.length; i < totalTiles; i++)
+          TextEditingController(text: 'Hasło ${i + 1}'),
+      ];
     });
   }
 
   BingoBoard _buildBoardObject(){
-    final title = _titleController.text.trim().isEmpty ? 'Moje Bingo ${_gridSize}x${_gridSize}' : _titleController.text.trim();
+    final title = _titleController.text.trim().isEmpty ? 'Moje Bingo ${_gridSize}x$_gridSize' : _titleController.text.trim();
 
     final customTiles = _controllers.asMap().entries.map((entry) {
       return BingoTile(

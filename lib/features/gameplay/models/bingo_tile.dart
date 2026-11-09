@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class BingoTile {
   final String id;
   final String text;
@@ -20,6 +18,6 @@ class BingoTile {
   factory BingoTile.fromJson(Map<String, dynamic> json) => BingoTile(
       id: json['id'] as String,
       text: json['text'] as String,
-      isChecked: json['isChecked'] as bool ?? false,
+      isChecked: (json['isChecked'] as bool?) ?? false,
     );
 }

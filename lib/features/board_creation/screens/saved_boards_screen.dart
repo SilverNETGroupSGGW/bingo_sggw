@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bingo_sggw/features/board_creation/models/bingo_board.dart';
 import 'package:bingo_sggw/core/services/board_storage_service.dart';
-import 'package:bingo_sggw/features/gameplay/screens/bingo_board_screen.dart';
 import 'package:bingo_sggw/features/board_creation/screens/board_creation_screen.dart';
 
 class SavedBoardsScreen extends StatefulWidget {
@@ -101,7 +100,7 @@ class _SavedBoardsScreenState extends State<SavedBoardsScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
-                  const Text('Stwórz nową planszę w formularzu głównym!'),
+                  const Text('Dotknij „Nowa plansza", aby stworzyć pierwszą!'),
                 ],
               ),
             );
