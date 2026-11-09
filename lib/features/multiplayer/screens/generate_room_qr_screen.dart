@@ -42,14 +42,6 @@ class GenerateRoomQrScreen extends StatelessWidget {
                 size: 260.0,
                 backgroundColor: Colors.white,
               ),
-              const SizedBox(height: 32),
-              ElevatedButton.icon(
-                onPressed: () {
-                  // Przejście do lobby
-                },
-                icon: const Icon(Icons.play_arrow),
-                label: const Text('PRZEJDŹ DO LOBBY'),
-              )
             ],
           ),
         ),

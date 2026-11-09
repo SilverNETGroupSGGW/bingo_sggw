@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bingo_sggw/core/services/deep_link_service.dart';
 import 'package:bingo_sggw/features/board_creation/screens/saved_boards_screen.dart';
+import 'package:bingo_sggw/features/multiplayer/screens/joined_room_screen.dart';
 
 void main() {
   runApp(const BingoSGGW());
@@ -29,24 +30,7 @@ class _BingoSGGWState extends State<BingoSGGW> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _navigatorKey.currentState?.push(
         MaterialPageRoute(
-          builder: (context) => Scaffold(
-            appBar: AppBar(title: Text('Pokój: $roomId')),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.wifi, size: 64, color: Colors.deepPurple),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Dołączono do pokoju $roomId!',
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text('Oczekiwanie na przesłanie planszy od Hosta...'),
-                ],
-              ),
-            ),
-          ),
+          builder: (context) => JoinedRoomScreen(roomId: roomId),
         ),
       );
     });
