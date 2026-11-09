@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bingo_sggw/core/services/deep_link_service.dart';
-import 'package:bingo_sggw/features/board_creation/screens/saved_boards_screen.dart';
+import 'package:bingo_sggw/features/home/screens/home_screen.dart';
 import 'package:bingo_sggw/features/multiplayer/screens/joined_room_screen.dart';
 
 void main() {
@@ -52,7 +52,7 @@ class _BingoSGGWState extends State<BingoSGGW> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const SavedBoardsScreen(),
+      home: const HomeScreen(),
     );
   }
 }
