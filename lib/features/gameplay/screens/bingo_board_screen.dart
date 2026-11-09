@@ -19,7 +19,8 @@ class BingoBoardScreen extends StatefulWidget {
 class _BingoBoardScreenState extends State<BingoBoardScreen> {
   late List<BingoTile> _tiles;
   late ConfettiController _confettiController;
-  bool _hasWon = false;
+  int _bingoCount = 0;
+  Set<int> _bingoTileIndexes = {};
 
   @override
   void initState() {
@@ -42,14 +43,14 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
   void _onTileTapped(int index){
     setState(() {
       _tiles[index].isChecked = !_tiles[index].isChecked;
-      bool currentWin = BingoChecker.checkBingo(_tiles, widget.gridSize);
+      final lines = BingoChecker.findBingoLines(_tiles, widget.gridSize);
 
-      if (currentWin && !_hasWon){
-        _hasWon = true;
+      if (lines.length > _bingoCount) {
         _confettiController.play();
-      } else if (!currentWin){
-        _hasWon = false;
       }
+
+      _bingoCount = lines.length;
+      _bingoTileIndexes = lines.expand((line) => line).toSet();
     });
   }
 
@@ -79,11 +80,14 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
                     ),
                     AnimatedOpacity(
                       duration: const Duration(milliseconds: 300),
-                      opacity: _hasWon ? 1.0 : 0.0,
-                      child: const Chip(
-                        label: Text('🎉 BINGO! 🎉', style: TextStyle(fontWeight: FontWeight.bold)),
+                      opacity: _bingoCount > 0 ? 1.0 : 0.0,
+                      child: Chip(
+                        label: Text(
+                          _bingoCount > 1 ? '🎉 BINGO x$_bingoCount 🎉' : '🎉 BINGO! 🎉',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         backgroundColor: Colors.amber,
-                        avatar: Icon(Icons.star, color: Colors.black, size: 18),
+                        avatar: const Icon(Icons.star, color: Colors.black, size: 18),
                         visualDensity: VisualDensity.compact,
                         ),
                       ),
@@ -104,6 +108,7 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
                         final tile = _tiles[index];
                         return _BingoTileItem(
                           tile: tile,
+                          isBingo: _bingoTileIndexes.contains(index),
                           onTap: () => _onTileTapped(index),
                         );
                       },
@@ -139,16 +144,21 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
 
 class _BingoTileItem extends StatelessWidget {
   final BingoTile tile;
+  final bool isBingo;
   final VoidCallback onTap;
 
   const _BingoTileItem({
     required this.tile,
+    required this.isBingo,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final foreground = tile.isChecked
+        ? theme.colorScheme.onPrimary
+        : theme.colorScheme.onSurfaceVariant;
 
     return GestureDetector(
       onTap: onTap,
@@ -166,13 +176,26 @@ class _BingoTileItem extends StatelessWidget {
                 : theme.colorScheme.outlineVariant,
             width: 2,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(20),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: isBingo
+              ? [
+                  BoxShadow(
+                    color: Colors.amberAccent.withAlpha(170),
+                    blurRadius: 10,
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Colors.amber.withAlpha(70),
+                    blurRadius: 22,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(20),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         padding: const EdgeInsets.all(6.0),
         child: Stack(
@@ -184,9 +207,7 @@ class _BingoTileItem extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
-                  color: tile.isChecked
-                      ? theme.colorScheme.onPrimary
-                      : theme.colorScheme.onSurfaceVariant,
+                  color: foreground,
                 ),
               ),
             ),
@@ -197,7 +218,7 @@ class _BingoTileItem extends StatelessWidget {
                 child: Icon(
                   Icons.check_circle,
                   size: 16,
-                  color: theme.colorScheme.onPrimary,
+                  color: foreground,
                 ),
               ),
           ],
