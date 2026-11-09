@@ -4,7 +4,8 @@ import 'package:bingo_sggw/core/services/board_storage_service.dart';
 import 'package:bingo_sggw/features/board_creation/screens/board_creation_screen.dart';
 import 'package:bingo_sggw/features/gameplay/models/bingo_tile.dart';
 import 'package:bingo_sggw/features/gameplay/screens/bingo_board_screen.dart';
-import 'package:bingo_sggw/features/multiplayer/screens/generate_room_qr_screen.dart';
+import 'package:bingo_sggw/features/multiplayer/screens/host_lobby_screen.dart';
+import 'package:bingo_sggw/features/multiplayer/widgets/ask_player_name_dialog.dart';
 import 'package:bingo_sggw/core/utils/room_code.dart';
 
 class SavedBoardsScreen extends StatefulWidget {
@@ -58,10 +59,17 @@ class _SavedBoardsScreenState extends State<SavedBoardsScreen> {
     );
   }
 
-  void _createRoom(BingoBoard board) {
+  Future<void> _createRoom(BingoBoard board) async {
+    final hostName = await askPlayerName(context);
+    if (hostName == null || !mounted) return;
+
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => GenerateRoomQrScreen(roomId: generateRoomCode()),
+        builder: (context) => HostLobbyScreen(
+          roomId: generateRoomCode(),
+          hostName: hostName,
+          board: board,
+        ),
       ),
     );
   }
