@@ -107,6 +107,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
         MaterialPageRoute(
           builder: (context) => BingoBoardScreen(
             gridSize: board.size,
+            title: board.title,
             initialTiles: board.tiles,
           ),
         ),

@@ -5,11 +5,13 @@ import 'package:bingo_sggw/core/utils/bingo_checker.dart';
 
 class BingoBoardScreen extends StatefulWidget {
   final int gridSize;
+  final String? title;
   final List<BingoTile>? initialTiles;
 
   const BingoBoardScreen({
     super.key,
     this.gridSize = 5,
+    this.title,
     this.initialTiles,
   });
 
@@ -95,7 +97,7 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
       children: [
         Scaffold(
           appBar: AppBar(
-            title: Text('Bingo ${widget.gridSize}x${widget.gridSize}'),
+            title: Text(widget.title ?? 'Bingo ${widget.gridSize}x${widget.gridSize}'),
             centerTitle: true,
             actions: [
               IconButton(

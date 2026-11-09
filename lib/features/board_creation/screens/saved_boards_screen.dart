@@ -53,6 +53,7 @@ class _SavedBoardsScreenState extends State<SavedBoardsScreen> {
       MaterialPageRoute(
         builder: (context) => BingoBoardScreen(
           gridSize: board.size,
+          title: board.title,
           initialTiles: tiles,
         ),
       ),
