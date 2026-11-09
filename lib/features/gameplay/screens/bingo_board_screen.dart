@@ -54,6 +54,37 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
     });
   }
 
+  Future<void> _resetBoard() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Resetuj planszę'),
+        content: const Text('Czy na pewno chcesz odznaczyć wszystkie pola?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Anuluj'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Resetuj'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      setState(() {
+        for (final tile in _tiles) {
+          tile.isChecked = false;
+        }
+        _bingoCount = 0;
+        _bingoTileIndexes = {};
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final checkedCount = _tiles.where((t) => t.isChecked).length;
@@ -66,6 +97,13 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
           appBar: AppBar(
             title: Text('Bingo ${widget.gridSize}x${widget.gridSize}'),
             centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.restart_alt),
+                tooltip: 'Resetuj planszę',
+                onPressed: checkedCount == 0 ? null : _resetBoard,
+              ),
+            ],
           ),
           body: Column(
             children: [
