@@ -1,2 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Flutter regenerates these with LF on every pub get/run; keep them LF so Windows (autocrlf) doesn't see phantom changes
+**/generated_plugin_registrant.* text eol=lf
+**/generated_plugins.cmake text eol=lf
+**/GeneratedPluginRegistrant.swift text eol=lf
