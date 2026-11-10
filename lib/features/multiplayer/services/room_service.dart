@@ -1,29 +1,33 @@
+import 'package:flutter/foundation.dart';
+import 'package:bingo_sggw/features/board_creation/models/bingo_board.dart';
 import 'package:bingo_sggw/features/multiplayer/models/player.dart';
 
-abstract class RoomService {
-  Stream<List<Player>> watchPlayers({
-    required String roomId,
-    required Player self,
-  });
-}
+class RoomException implements Exception {
+  final String message;
 
-class MockRoomService implements RoomService {
-  const MockRoomService();
+  const RoomException(this.message);
 
   @override
-  Stream<List<Player>> watchPlayers({
-    required String roomId,
-    required Player self,
-  }) async* {
-    final players = self.isHost
-        ? [self]
-        : [const Player(name: 'Prowadzący', isHost: true), self];
-    yield List.of(players);
+  String toString() => message;
+}
 
-    for (final name in ['Ania', 'Marek', 'Kasia']) {
-      await Future.delayed(const Duration(seconds: 2));
-      players.add(Player(name: name));
-      yield List.of(players);
-    }
-  }
+abstract class RoomSession {
+  ValueListenable<List<Player>> get players;
+  ValueListenable<BingoBoard?> get startedBoard;
+  ValueListenable<bool> get closed;
+
+  Future<void> startGame(BingoBoard board);
+  void dispose();
+}
+
+abstract class RoomService {
+  Future<RoomSession> hostRoom({
+    required String roomId,
+    required String hostName,
+  });
+
+  Future<RoomSession> joinRoom({
+    required String roomId,
+    required String name,
+  });
 }

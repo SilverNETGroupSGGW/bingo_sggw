@@ -6,7 +6,6 @@ import 'package:bingo_sggw/features/gameplay/models/bingo_tile.dart';
 import 'package:bingo_sggw/features/gameplay/screens/bingo_board_screen.dart';
 import 'package:bingo_sggw/features/multiplayer/screens/host_lobby_screen.dart';
 import 'package:bingo_sggw/features/multiplayer/widgets/ask_player_name_dialog.dart';
-import 'package:bingo_sggw/core/utils/room_code.dart';
 
 class SavedBoardsScreen extends StatefulWidget {
   const SavedBoardsScreen({super.key});
@@ -66,7 +65,6 @@ class _SavedBoardsScreenState extends State<SavedBoardsScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => HostLobbyScreen(
-          roomId: generateRoomCode(),
           hostName: hostName,
           board: board,
         ),

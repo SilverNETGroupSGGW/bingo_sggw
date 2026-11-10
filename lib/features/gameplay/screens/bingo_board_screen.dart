@@ -2,17 +2,20 @@ import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:bingo_sggw/features/gameplay/models/bingo_tile.dart';
 import 'package:bingo_sggw/core/utils/bingo_checker.dart';
+import 'package:bingo_sggw/features/multiplayer/services/room_service.dart';
 
 class BingoBoardScreen extends StatefulWidget {
   final int gridSize;
   final String? title;
   final List<BingoTile>? initialTiles;
+  final RoomSession? session;
 
   const BingoBoardScreen({
     super.key,
     this.gridSize = 5,
     this.title,
     this.initialTiles,
+    this.session,
   });
 
   @override createState() => _BingoBoardScreenState();
@@ -176,6 +179,7 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
 
   @override
   void dispose() {
+    widget.session?.dispose();
     _confettiController.dispose();
     super.dispose();
   }

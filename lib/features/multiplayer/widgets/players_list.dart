@@ -1,20 +1,19 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:bingo_sggw/features/multiplayer/models/player.dart';
 
 class PlayersList extends StatelessWidget {
-  final Stream<List<Player>> stream;
+  final ValueListenable<List<Player>> players;
 
-  const PlayersList({super.key, required this.stream});
+  const PlayersList({super.key, required this.players});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return StreamBuilder<List<Player>>(
-      stream: stream,
-      builder: (context, snapshot) {
-        final players = snapshot.data ?? const <Player>[];
-
+    return ValueListenableBuilder<List<Player>>(
+      valueListenable: players,
+      builder: (context, players, _) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
