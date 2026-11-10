@@ -88,6 +88,7 @@ class _HostSession implements RoomSession {
   late final _players = ValueNotifier<List<Player>>([_host]);
   final _startedBoard = ValueNotifier<BingoBoard?>(null);
   final _closed = ValueNotifier<bool>(false);
+  final _checked = ValueNotifier<Set<int>>({});
 
   @override
   ValueListenable<List<Player>> get players => _players;
@@ -98,12 +99,22 @@ class _HostSession implements RoomSession {
   @override
   ValueListenable<bool> get closed => _closed;
 
+  @override
+  ValueListenable<Set<int>> get checkedTiles => _checked;
+
+  @override
+  bool get isHost => true;
+
   void _onConnection(DataConnection conn) {
     conn.on('data').listen((data) {
-      if (data is Map && data['type'] == 'join') {
+      if (data is! Map) return;
+
+      if (data['type'] == 'join') {
         final name = (data['name'] as String? ?? '').trim();
         _guests[conn] = Player(name: name.isEmpty ? 'Gracz' : name);
         _publishPlayers();
+      } else if (data['type'] == 'toggle' && data['index'] is int) {
+        toggleTile(data['index'] as int);
       }
     });
     conn.on('close').listen((_) {
@@ -132,11 +143,29 @@ class _HostSession implements RoomSession {
   }
 
   @override
+  void toggleTile(int index) {
+    final checked = {..._checked.value};
+    if (!checked.remove(index)) {
+      checked.add(index);
+    }
+    _setChecked(checked);
+  }
+
+  @override
+  void resetTiles() => _setChecked({});
+
+  void _setChecked(Set<int> checked) {
+    _checked.value = checked;
+    _broadcast({'type': 'tiles', 'checked': checked.toList()});
+  }
+
+  @override
   void dispose() {
     _peer.dispose();
     _players.dispose();
     _startedBoard.dispose();
     _closed.dispose();
+    _checked.dispose();
   }
 }
 
@@ -163,6 +192,7 @@ class _GuestSession implements RoomSession {
   late final _players = ValueNotifier<List<Player>>([Player(name: _name)]);
   final _startedBoard = ValueNotifier<BingoBoard?>(null);
   final _closed = ValueNotifier<bool>(false);
+  final _checked = ValueNotifier<Set<int>>({});
   Timer? _retry;
   bool _joined = false;
   bool _disposed = false;
@@ -175,6 +205,12 @@ class _GuestSession implements RoomSession {
 
   @override
   ValueListenable<bool> get closed => _closed;
+
+  @override
+  ValueListenable<Set<int>> get checkedTiles => _checked;
+
+  @override
+  bool get isHost => false;
 
   void _sendJoin() {
     _conn.send({'type': 'join', 'name': _name});
@@ -194,12 +230,26 @@ class _GuestSession implements RoomSession {
         _startedBoard.value = BingoBoard.fromJson(
           Map<String, dynamic>.from(data['board'] as Map),
         );
+      case 'tiles':
+        _checked.value = {
+          for (final index in data['checked'] as List) index as int,
+        };
     }
   }
 
   @override
   Future<void> startGame(BingoBoard board) async {
     throw StateError('Tylko host może rozpocząć grę.');
+  }
+
+  @override
+  void toggleTile(int index) {
+    _conn.send({'type': 'toggle', 'index': index});
+  }
+
+  @override
+  void resetTiles() {
+    throw StateError('Tylko host może zresetować planszę.');
   }
 
   @override
@@ -210,5 +260,6 @@ class _GuestSession implements RoomSession {
     _players.dispose();
     _startedBoard.dispose();
     _closed.dispose();
+    _checked.dispose();
   }
 }

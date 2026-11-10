@@ -15,8 +15,12 @@ abstract class RoomSession {
   ValueListenable<List<Player>> get players;
   ValueListenable<BingoBoard?> get startedBoard;
   ValueListenable<bool> get closed;
+  ValueListenable<Set<int>> get checkedTiles;
+  bool get isHost;
 
   Future<void> startGame(BingoBoard board);
+  void toggleTile(int index);
+  void resetTiles();
   void dispose();
 }
 

@@ -43,19 +43,57 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
         ),
       );
     }
+
+    final session = widget.session;
+    if (session != null) {
+      session.checkedTiles.addListener(_onSessionTilesChanged);
+      session.closed.addListener(_onSessionClosed);
+      _applySessionTiles();
+    }
+  }
+
+  void _updateBingo() {
+    final lines = BingoChecker.findBingoLines(_tiles, widget.gridSize);
+
+    if (lines.length > _bingoCount) {
+      _confettiController.play();
+    }
+
+    _bingoCount = lines.length;
+    _bingoTileIndexes = lines.expand((line) => line).toSet();
+  }
+
+  void _applySessionTiles() {
+    final checked = widget.session!.checkedTiles.value;
+    for (var i = 0; i < _tiles.length; i++) {
+      _tiles[i].isChecked = checked.contains(i);
+    }
+    _updateBingo();
+  }
+
+  void _onSessionTilesChanged() {
+    setState(_applySessionTiles);
+  }
+
+  void _onSessionClosed() {
+    if (!mounted || !widget.session!.closed.value) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Host zakończył grę')),
+    );
+    Navigator.of(context).pop();
   }
 
   void _onTileTapped(int index){
+    final session = widget.session;
+    if (session != null) {
+      session.toggleTile(index);
+      return;
+    }
+
     setState(() {
       _tiles[index].isChecked = !_tiles[index].isChecked;
-      final lines = BingoChecker.findBingoLines(_tiles, widget.gridSize);
-
-      if (lines.length > _bingoCount) {
-        _confettiController.play();
-      }
-
-      _bingoCount = lines.length;
-      _bingoTileIndexes = lines.expand((line) => line).toSet();
+      _updateBingo();
     });
   }
 
@@ -79,7 +117,12 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
       ),
     );
 
-    if (confirmed == true) {
+    if (confirmed != true) return;
+
+    final session = widget.session;
+    if (session != null) {
+      session.resetTiles();
+    } else {
       setState(() {
         for (final tile in _tiles) {
           tile.isChecked = false;
@@ -103,11 +146,12 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
             title: Text(widget.title ?? 'Bingo ${widget.gridSize}x${widget.gridSize}'),
             centerTitle: true,
             actions: [
-              IconButton(
-                icon: const Icon(Icons.restart_alt),
-                tooltip: 'Resetuj planszę',
-                onPressed: checkedCount == 0 ? null : _resetBoard,
-              ),
+              if (widget.session?.isHost ?? true)
+                IconButton(
+                  icon: const Icon(Icons.restart_alt),
+                  tooltip: 'Resetuj planszę',
+                  onPressed: checkedCount == 0 ? null : _resetBoard,
+                ),
             ],
           ),
           body: Column(
@@ -179,7 +223,12 @@ class _BingoBoardScreenState extends State<BingoBoardScreen> {
 
   @override
   void dispose() {
-    widget.session?.dispose();
+    final session = widget.session;
+    if (session != null) {
+      session.checkedTiles.removeListener(_onSessionTilesChanged);
+      session.closed.removeListener(_onSessionClosed);
+      session.dispose();
+    }
     _confettiController.dispose();
     super.dispose();
   }
